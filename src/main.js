@@ -9,5 +9,10 @@ new Vue({
     data: {
         images:[]
     },
+    methods:{
+        rotate_callback() {
+            console.log('finished');
+        }
+    },
     components: { 'images-viewer':App }
 })
