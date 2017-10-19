@@ -1,6 +1,6 @@
 # vuejs-images-viewer
 [![Build Status](https://travis-ci.org/conventional-changelog/standard-version.svg?branch=master)](https://travis-ci.org/conventional-changelog/standard-version)
-[![NPM version](https://img.shields.io/npm/v/standard-version.svg)](https://www.npmjs.com/package/vuejs-images-viewer)
+[![NPM version](https://img.shields.io/badge/npm-v1.0.7-brightgreen.svg)](https://www.npmjs.com/package/vuejs-images-viewer)
 
 ## Installation
 ```js
