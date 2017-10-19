@@ -5,7 +5,7 @@ var path = require('path');
 var webpack = require('webpack')
 var config = {
     entry: {
-        app: [path.join(__dirname, 'src', 'main')],
+        main: path.join(__dirname, 'src', 'main')
     },
     output: {
         path: path.join(__dirname, 'dist'),
