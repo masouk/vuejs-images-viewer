@@ -34,8 +34,8 @@
                 required: false,
                 default: function () {
                     return [
-                        {'url':'/dist/6854315974753.jpeg'},
                         {'url':'https://www.ikepo.com.tw/uimages/U4efce419d9868e162a4b1efaea21b850/6854315974753.jpeg'},
+                        {'url':'/dist/6854315974753.jpeg'},
                         {'url':'http://www.realty.com.tw/image/data/tw_s1/A3912_5.jpg'},
                     ];
                 }
