@@ -8,12 +8,12 @@ const merge = require('webpack-merge');
 var config = {
     /*
     entry: {
-        main: path.join(__dirname, 'src', 'plugin')
+        main: path.join(__dirname, 'src', 'main')
     },*/
     output: {
         path: path.resolve(__dirname + '/dist/'),
-        //filename: 'plugin.js',
-        //publicPath: '/dist/'
+        // filename: 'plugin.js',
+        // publicPath: '/dist/'
     },
     module: {
         loaders: [
@@ -55,7 +55,9 @@ var config = {
 
 }
 
-// module.exports = config;
+//module.exports = config;
+
+
 module.exports = [
     merge(config, {
         entry: path.resolve(__dirname + '/src/plugin.js'),

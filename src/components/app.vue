@@ -1,10 +1,9 @@
 <template lang="html">
-    <div class="fm-images-viewer" v-bind:style="{ 'width': max_width, 'height': max_height }">
+    <div class="fm-images-viewer" v-bind:style="{'heigth':height}">
         <canvas id="canvas"></canvas>
-
         <div>
-            <button @click="clockwise" class="btn btn-default">Rotate right</button>
-            <button @click="counterclockwise" class="btn btn-default">Rotate left</button>
+            <button @click="clockwise" class="btn btn-default"><i class="material-icons">rotate_right</i></button>
+            <button @click="counterclockwise" class="btn btn-default"><i class="material-icons">rotate_left</i></button>
             <button @click="nextImage" class="btn btn-default">Image</button>
         </div>
 
@@ -12,17 +11,13 @@
 </template>
 
 <script>
+
     export default {
         props:{
-            background: {
+            height: {
                 type: String,
-                required: false,
-                default: '#eee'
-            },
-            max_height: {
-                type: Number,
                 required:false,
-                default: 600
+                default: '600px'
             },
             max_width: {
                 type: [String, Number],
@@ -83,11 +78,7 @@
                 context:{},
                 imageIndex:0,
                 image: {
-                    direct: true,
-                    origin: {
-                        width:0,
-                        height:0
-                    }
+                    direct: true
                 }
 
             }
@@ -96,13 +87,12 @@
             initialize() {
 
 				window.addEventListener('resize', this.resizeCanvas, false);
-
-				this.resizeCanvas();
+				this.loadImage();
 			},
 			resizeCanvas() {
 				//this.elm.canvas.width = this.elm.canvas.parentElement.clientWidth;
 				//this.canvas.height = this.canvas.parentElement.clientHeight;
-                this.loadImage();
+                this.render();
 			},
 			nextImage() {
 			    this.imageIndex = this.imageIndex + 1;
@@ -111,8 +101,7 @@
 			        this.imageIndex = maxIndex;
 			        return ;
 			    }
-			    this.image.origin.width = 0;
-			    this.image.origin.height = 0;
+
 			    this.context.clearRect(0,0,this.elm.canvas.width, this.elm.canvas.height);
 
 			    this.loadImage();
@@ -122,68 +111,58 @@
 			    var _this = this;
 
 			    this.elm.image.onload=function(){
-
-			        _this.image.origin.width = _this.elm.image.width;
-			        _this.image.origin.height = _this.elm.image.height;
-
-                    _this.resizeImage(false);
-
+                    _this.render();
                 }
                 this.elm.image.src = this.images[this.imageIndex].url;
 			},
-			resizeImage(isRotate=false) {
+			resizeImage() {
 
-			     var maxWidth = this.max_width == '100%' ? this.elm.canvas.parentElement.clientWidth : this.max_width;
-			     var maxHeight = this.max_height;
-			     var img_origin_w = this.image.origin.width;
-			     var img_origin_h = this.image.origin.height;
+                  var maxWidth = this.elm.canvas.parentElement.clientWidth;
+                  var maxHeight = this.elm.canvas.parentElement.clientHeight;
+                  var maxSize = {w: maxWidth, h: maxHeight};
 
-
-
-                //image ration from origin size
-			     var newWidth = img_origin_w;
-			     var newHeight = img_origin_h;
+                  var newSize = {w:this.elm.image.width,h:this.elm.image.height}
 
 
-			     if (maxWidth < img_origin_w) {
-			        newHeight = newHeight * (maxWidth / img_origin_w);
-                    newWidth = maxWidth;
-                 }
+                  var tmpMaxSize = maxSize;
 
-                 if (maxHeight < img_origin_h) {
-                    newWidth = newWidth * (maxHeight / img_origin_h);
-                    newHeight = maxHeight
-                 }
+                  if (!this.image.direct) {
+                    tmpMaxSize = {w: maxHeight, h: maxWidth}
+                  }
 
-                var rotateWidth = this.image.direct ? newWidth : newHeight;
-                var rotateHeight = this.image.direct ? newHeight : newWidth;
+                  if (newSize.w > tmpMaxSize.w) {
+                    newSize.h = newSize.h * tmpMaxSize.w / newSize.w
+                    newSize.w = tmpMaxSize.w
+                  }
 
-                 this.elm.canvas.width = rotateWidth;
-                 this.elm.canvas.height = rotateHeight
+                  if(newSize.h > tmpMaxSize.h) {
+                    newSize.w = newSize.w * tmpMaxSize.h / newSize.h
+                    newSize.h = tmpMaxSize.h
+                  }
 
-                 console.log(maxWidth,maxHeight);
+                    this.elm.canvas.width = maxSize.w;
+                    this.elm.canvas.height = maxSize.h;
 
+                    console.log('MAX',maxSize);
+                    console.log('NEW',newSize);
 
-                 this.context.save();
+                    return newSize;
 
-                 this.context.translate(this.elm.canvas.width/2,this.elm.canvas.height/2);
-
-
-                 this.context.rotate(this.viewer.angle * Math.PI/180);
-
-
-                 this.context.drawImage(    this.elm.image, 0, 0,
-                                            img_origin_w, img_origin_h,
-                                            -newWidth*0.5, -newHeight*0.5,
-                                            newWidth,newHeight);
-
-
-
-                 this.context.restore();
 			},
 
-            drawRotated(degrees) {
-                this.resizeImage(true);
+            render() {
+                var size = this.resizeImage();
+
+                var imageSize = {w:size.w,h:size.h};
+                var canvasCenter = {x:canvas.width * 0.5, y: canvas.height * 0.5};
+                var imageCenter =  {x:imageSize.w * 0.5, y: imageSize.h * 0.5};
+
+                var rotateImgCenter = {x:-imageCenter.x ,y: -imageCenter.y}
+
+                this.context.translate(canvasCenter.x, canvasCenter.y );
+                this.context.rotate( this.viewer.angle * Math.PI / 180);
+
+                this.context.drawImage(this.elm.image, 0, 0, this.elm.image.width, this.elm.image.height, rotateImgCenter.x, rotateImgCenter.y ,imageSize.w,imageSize.h);
             },
             imageDirect() {
                 this.image.direct = !this.image.direct
@@ -192,14 +171,14 @@
             clockwise() {
                 this.viewer.angle += 90;
                 this.imageDirect();
-                this.drawRotated(this.viewer.angle);
+                this.render();
 
                 this.rotate_callback();
             },
             counterclockwise() {
                 this.viewer.angle -= 90;
                 this.imageDirect();
-                this.drawRotated(this.viewer.angle);
+                this.render();
 
                 this.rotate_callback();
             },
@@ -214,11 +193,7 @@
     .fm-images-viewer {
         text-align: center;
         width: 100%;
-        max-height: 600px;
+        height:600px;
+        /*border: 5px solid #000;*/
     }
-    canvas {
-        border: 5px solid #000;
-        padding: 5px;
-    }
-
 </style>
