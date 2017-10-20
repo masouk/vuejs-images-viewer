@@ -1,6 +1,6 @@
 {
   "name": "vuejs-images-viewer",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "images viewer it can rotate",
   "main": "dist/app.js",
   "scripts": {
